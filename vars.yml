@@ -1,5 +1,13 @@
 project_name: django-basic-ansible
 
+install_root: /srv
+
+# the git repository URL for the project
+project_repo: ssh://git@github.com/rafaelrabetti/GCS04.git
+
+# a private key that has access to the repository URL
+ssh_private_key: ~/.ssh/id_rsa
+
 dbname: basicdjango
 dbuser: basicdjangouser
 dbpassword: password
