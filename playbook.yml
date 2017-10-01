@@ -1,0 +1,45 @@
+---
+- hosts: web
+  vars_files:
+    - vars.yml
+  become: yes
+  tasks:
+    - name: Install system packages
+      apt: pkg={{item}} state=installed update_cache=true
+      with_items: "{{system_packages}}"
+
+    - name: make sure postgresql server is running
+      service: name=postgresql state=started
+
+    - name: create database
+      become_user: postgres
+      postgresql_db: name={{ dbname }}
+
+    - name: create database user
+      become_user: postgres
+      postgresql_user: db={{ dbname }} name={{ dbuser }} password={{ dbpassword }} priv=ALL
+
+    - name: Clone/pull project repo
+      git: repo={{ project_repo }} dest={{ install_root }}/{{ project_name }} accept_hostkey=yes
+      notify:
+      - restart gunicorn
+
+    - name: install python packages
+      pip: requirements={{ install_root }}/{{ project_name }}/requirements.txt
+      notify:
+
+    - name: install python packages
+      pip:
+        requirements: /home/rafatois/Documents/UnB/GCS/GCS04/GCS/django-basic-ansible/requirements.txt
+
+    - name: copy settings.py config
+      template: src=template/settings.py.j2 dest=djangobasico/settings.py
+
+    - name: django migrate
+      django_manage:
+        command: migrate
+
+    - name: initial database database
+      django_manage:
+        command: loaddata
+        fixtures: db.fixture.json

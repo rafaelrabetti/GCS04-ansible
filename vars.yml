@@ -1,0 +1,12 @@
+project_name: django-basic-ansible
+
+dbname: basicdjango
+dbuser: basicdjangouser
+dbpassword: password
+
+system_packages:
+  - postgresql
+  - postgresql-contrib
+  - libpq-dev
+  - python-psycopg2
+  - python-pip
