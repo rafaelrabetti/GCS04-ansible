@@ -26,19 +26,16 @@
       postgresql_user: db={{ dbname }} name={{ dbuser }} password={{ dbpassword }} priv=ALL
 
     - name: Clone/pull project repo
-      git: repo={{ project_repo }} dest={{ install_root }}/{{ project_name }} accept_hostkey=yes
+      git: repo={{ project_repo }} dest={{ install_root }}/{{ project_name }} accept_hostkey=yes force=yes
 
     - name: install python packages
       pip: requirements={{ install_root }}/{{ project_name }}/requirements.txt
 
     - name: copy settings.py config
-      template: src={{ install_root }}/{{ project_name }}/template/settings.py.j2 dest={{ install_root }}/{{ project_name }}/djangobasico/settings.py
+      template: src=templates/settings.py.j2 dest={{ install_root }}/{{ project_name }}/djangobasico/settings.py
 
     - name: django migrate
-      django_manage:
-        command: migrate
+      django_manage: command=migrate app_path={{ install_root }}/{{ project_name }}
 
     - name: initial database database
-      django_manage:
-        command: loaddata
-        fixtures: db.fixture.json
+      django_manage: command=loaddata fixtures=db.fixture.json app_path={{ install_root }}/{{ project_name }}
